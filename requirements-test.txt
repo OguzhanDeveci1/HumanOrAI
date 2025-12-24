@@ -1,0 +1,31 @@
+# Test Dependencies for White Box Testing
+# Human or AI Text Classifier Project
+
+# Core Testing Framework
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-html==4.1.1
+
+# Unit Testing
+unittest-xml-reporting==3.2.0
+
+# Mocking
+mock==5.1.0
+
+# Selenium Testing
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Coverage Reports
+coverage==7.3.2
+coverage-badge==1.1.0
+
+# Code Quality
+bandit==1.7.5
+flake8==6.1.0
+pylint==3.0.2
+
+# Additional Testing Utilities
+faker==20.1.0
+parameterized==0.9.0
