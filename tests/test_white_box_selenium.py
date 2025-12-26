@@ -87,7 +87,7 @@ class TestFlaskEndpointWhiteBox(unittest.TestCase):
         """
         print("\n=== Test 3.0: Page Load ===")
 
-        self.driver.get(self.base_url)
+        self.driver.get(self.base_url + "/analyze")
 
         # Check title
         self.assertIn("Human or AI", self.driver.title)
@@ -109,7 +109,7 @@ class TestFlaskEndpointWhiteBox(unittest.TestCase):
         """
         print("\n=== Test 3.1: Validation Error (Empty Text) ===")
 
-        self.driver.get(self.base_url)
+        self.driver.get(self.base_url + "/analyze")
         wait = WebDriverWait(self.driver, 10)
 
         # Wait for page to load
@@ -162,7 +162,7 @@ class TestFlaskEndpointWhiteBox(unittest.TestCase):
             self.skipTest("Models not available")
             return
 
-        self.driver.get(self.base_url)
+        self.driver.get(self.base_url + "/analyze")
         wait = WebDriverWait(self.driver, 180)  # Extended timeout for model loading
 
         # Wait for textarea
@@ -225,7 +225,7 @@ class TestFlaskEndpointWhiteBox(unittest.TestCase):
         """
         print("\n=== Test 3.3: Keyboard Shortcuts ===")
 
-        self.driver.get(self.base_url)
+        self.driver.get(self.base_url + "/analyze")
         wait = WebDriverWait(self.driver, 10)
 
         textarea = wait.until(
@@ -272,7 +272,7 @@ class TestFlaskEndpointWhiteBox(unittest.TestCase):
 
         for width, height, device in viewports:
             self.driver.set_window_size(width, height)
-            self.driver.get(self.base_url)
+            self.driver.get(self.base_url + "/analyze")
 
             wait = WebDriverWait(self.driver, 10)
             textarea = wait.until(

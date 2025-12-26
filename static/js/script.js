@@ -37,6 +37,13 @@ analyzeBtn.addEventListener('click', async () => {
         return;
     }
 
+    // Validate minimum word count (50 words required)
+    const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+    if (wordCount < 50) {
+        showError(`Text must contain at least 50 words. Current: ${wordCount} words.`);
+        return;
+    }
+
     hideError();
     hideResults();
     showLoading();
@@ -90,6 +97,9 @@ function hideResults() {
 }
 
 function displayResults(data) {
+    // Store latest results for statistics
+    latestResults = data;
+
     const { individual_results, ensemble } = data;
 
     // Display ensemble result
@@ -178,3 +188,184 @@ textInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = this.scrollHeight + 'px';
 });
+
+// ============ Statistics Dashboard ============
+
+// Store latest prediction results globally
+let latestResults = null;
+let confidenceChart = null;
+
+// Statistics modal elements
+const statsBtn = document.getElementById('statsBtn');
+const statsModal = document.getElementById('statsModal');
+const closeModal = document.getElementById('closeModal');
+const modelRankings = document.getElementById('modelRankings');
+
+// Open statistics modal
+statsBtn.addEventListener('click', () => {
+    if (!latestResults) {
+        showError('No predictions yet. Analyze some text first!');
+        return;
+    }
+
+    statsModal.style.display = 'flex';
+    renderPieChart();
+    renderRankings();
+});
+
+// Close modal - X button
+closeModal.addEventListener('click', () => {
+    statsModal.style.display = 'none';
+});
+
+// Close modal - backdrop click
+statsModal.addEventListener('click', (e) => {
+    if (e.target === statsModal) {
+        statsModal.style.display = 'none';
+    }
+});
+
+// Close modal - Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && statsModal.style.display === 'flex') {
+        statsModal.style.display = 'none';
+    }
+});
+
+// Render pie chart with Chart.js
+function renderPieChart() {
+    const ctx = document.getElementById('confidenceChart').getContext('2d');
+
+    // Extract model data
+    const models = ['BERT', 'RoBERTa', 'DRF', 'GBM', 'GLM'];
+    const modelData = models.map(name => ({
+        name: name,
+        confidence: latestResults.individual_results[name].confidence
+    }));
+
+    // Destroy existing chart if exists
+    if (confidenceChart) {
+        confidenceChart.destroy();
+    }
+
+    // Create new chart
+    confidenceChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: modelData.map(m => m.name),
+            datasets: [{
+                data: modelData.map(m => m.confidence),
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',  // BERT - Primary blue
+                    'rgba(118, 75, 162, 0.8)',   // RoBERTa - Purple
+                    'rgba(237, 100, 166, 0.8)',  // DRF - Pink
+                    'rgba(255, 159, 67, 0.8)',   // GBM - Orange
+                    'rgba(72, 219, 251, 0.8)'    // GLM - Cyan
+                ],
+                borderColor: [
+                    'rgba(102, 126, 234, 1)',
+                    'rgba(118, 75, 162, 1)',
+                    'rgba(237, 100, 166, 1)',
+                    'rgba(255, 159, 67, 1)',
+                    'rgba(72, 219, 251, 1)'
+                ],
+                borderWidth: 2,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#e2e8f0',
+                        font: {
+                            size: 13,
+                            weight: '500'
+                        },
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#e2e8f0',
+                    bodyColor: '#cbd5e1',
+                    borderColor: 'rgba(102, 126, 234, 0.5)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            return `${label}: ${value.toFixed(2)}%`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+// Render model rankings
+function renderRankings() {
+    const models = ['BERT', 'RoBERTa', 'DRF', 'GBM', 'GLM'];
+
+    // Create array with model data
+    const modelData = models.map(name => ({
+        name: name,
+        confidence: latestResults.individual_results[name].confidence,
+        label: latestResults.individual_results[name].label,
+        prediction: latestResults.individual_results[name].prediction
+    }));
+
+    // Sort by confidence descending
+    modelData.sort((a, b) => b.confidence - a.confidence);
+
+    // Generate HTML for rankings
+    const rankingsHTML = modelData.map((model, index) => {
+        const rank = index + 1;
+        const badgeClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : 'default';
+        const isHuman = model.label === 'HUMAN';
+        const labelClass = isHuman ? 'human' : 'ai';
+        const icon = isHuman ? '👤' : '🤖';
+
+        // Medal emoji for top 3
+        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+        return `
+            <div class="ranking-item" style="animation-delay: ${index * 0.1}s">
+                <div class="rank-badge ${badgeClass}">
+                    <span class="rank-number">#${rank}</span>
+                </div>
+                <div class="ranking-info">
+                    <div class="ranking-header">
+                        <span class="model-name">${model.name}</span>
+                        ${medal ? `<span class="medal">${medal}</span>` : ''}
+                    </div>
+                    <div class="ranking-details">
+                        <span class="ranking-prediction ${labelClass}">
+                            ${icon} ${model.label}
+                        </span>
+                        <span class="ranking-confidence">${model.confidence.toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="ranking-bar-container">
+                    <div class="ranking-bar ${labelClass}" style="width: ${model.confidence}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    modelRankings.innerHTML = rankingsHTML;
+}

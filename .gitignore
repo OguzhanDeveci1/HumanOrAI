@@ -1,8 +1,7 @@
+# ============================================
 # Python
-.venv/
+# ============================================
 __pycache__/
-models/
-
 *.py[cod]
 *$py.class
 *.so
@@ -11,42 +10,167 @@ models/
 dist/
 build/
 *.egg
+*.pyc
+*.pyo
 
+# ============================================
 # Virtual Environment
+# ============================================
 .venv/
 venv/
 ENV/
 env/
+.virtualenv/
 
-# IDEs
+# ============================================
+# Models - Büyük Model Dosyaları (Git LFS kullanılmalı)
+# ============================================
+models/
+*.pkl
+*.pth
+*.pt
+*.h5
+*.hdf5
+*.safetensors
+*.bin
+*.onnx
+
+# ============================================
+# H2O AutoML
+# ============================================
+h2o_jar/
+h2o-3/
+h2o-genmodel.jar
+
+# ============================================
+# Test Coverage & Reports
+# ============================================
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.cover
+.hypothesis/
+.tox/
+*.lcov
+
+# ============================================
+# Jupyter Notebook
+# ============================================
+.ipynb_checkpoints
+*.ipynb_checkpoints
+Untitled*.ipynb
+
+# ============================================
+# IDEs & Editors
+# ============================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Environment variables
+# ============================================
+# Environment Variables & Secrets
+# ============================================
 .env
 .env.local
+.env.*.local
+.flaskenv
+*.secret
+secrets/
 
-# Models - büyük model dosyaları
-models/
-
-# H2O
-h2o_jar/
-h2o-3/
-
+# ============================================
 # Logs
+# ============================================
 *.log
 logs/
+log/
+*.log.*
 
-# OS
+# ============================================
+# OS Files
+# ============================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
+nul
 
-# Cache
-*.cache
-.pytest_cache/
+# ============================================
+# Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*~.nib
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# ============================================
+# Static File Caches
+# ============================================
+.webassets-cache
+staticfiles/
+
+# ============================================
+# SonarQube Analysis
+# ============================================
+.scannerwork/
+.sonar/
+
+# ============================================
+# Debug Files
+# ============================================
+debug_h2o.py
+check_models.py
+predict.py
+
+# ============================================
+# Distribution / Packaging
+# ============================================
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# Documentation Build
+# ============================================
+docs/_build/
+site/
+
+# ============================================
+# Backup Files
+# ============================================
+*.backup
+*.bk
+
+# ============================================
+# Database
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# Miscellaneous
+# ============================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+celerybeat-schedule
+celerybeat.pid

@@ -250,6 +250,10 @@ predictor = HumanOrAIPredictor()
 def index():
     return render_template('index.html')
 
+@app.route('/analyze')
+def analyze():
+    return render_template('analyze.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -262,6 +266,13 @@ def predict():
 
         if not text.strip():
             return jsonify({'error': 'Please provide text to analyze'}), 400
+
+        # Validate minimum word count (50 words required)
+        word_count = len(text.split())
+        if word_count < 50:
+            return jsonify({
+                'error': f'Text must contain at least 50 words. Current: {word_count} words.'
+            }), 400
 
         # Make predictions
         results = predictor.predict_all(text)
